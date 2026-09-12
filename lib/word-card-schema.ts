@@ -58,6 +58,14 @@ export const wordCardDraftSchema = z.object({
 export type GenerateWordInput = z.infer<typeof generateWordInputSchema>;
 export type WordCardDraft = z.infer<typeof wordCardDraftSchema>;
 
+export const saveWordInputSchema = z.object({
+  draft: wordCardDraftSchema,
+  originalContext: z.string().trim().max(500).optional(),
+  source: sourceSchema,
+});
+
+export type SaveWordInput = z.infer<typeof saveWordInputSchema>;
+
 export function normalizeTerm(value: string) {
   return value.normalize("NFKC").trim().replace(/\s+/g, " ").toLocaleLowerCase("en-US");
 }

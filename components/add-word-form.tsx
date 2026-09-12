@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { LoaderCircle, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { WordCardPreview } from "@/components/word-card-preview";
 import type { WordCardDraft } from "@/lib/word-card-schema";
 
@@ -23,12 +24,15 @@ export function AddWordForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mode, setMode] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [savedId, setSavedId] = useState<string | null>(null);
 
   async function generate(event?: FormEvent) {
     event?.preventDefault();
     setLoading(true);
     setError(null);
     setEditing(false);
+    setSavedId(null);
 
     try {
       const response = await fetch("/api/words/generate", {
@@ -52,6 +56,30 @@ export function AddWordForm() {
       setError(caught instanceof Error ? caught.message : "Unable to generate this card.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function save() {
+    if (!draft) return;
+    setSaving(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/words", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          draft,
+          originalContext: originalContext || undefined,
+          source,
+        }),
+      });
+      const body = (await response.json()) as { id?: string; error?: string };
+      if (!response.ok || !body.id) throw new Error(body.error || "Unable to save this card.");
+      setSavedId(body.id);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Unable to save this card.");
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -127,13 +155,24 @@ export function AddWordForm() {
       ) : null}
 
       {draft ? (
-        <WordCardPreview
-          draft={draft}
-          editing={editing}
-          onEditingChange={setEditing}
-          onChange={setDraft}
-          onRegenerate={() => void generate()}
-        />
+        <>
+          {savedId ? (
+            <div className="mt-6 flex items-center justify-between rounded-2xl bg-[var(--accent-soft)] px-5 py-4 text-sm text-[var(--accent)]">
+              <strong>Added to My Words</strong>
+              <Link href="/words" className="font-bold underline underline-offset-4">View words</Link>
+            </div>
+          ) : null}
+          <WordCardPreview
+            draft={draft}
+            editing={editing}
+            onEditingChange={setEditing}
+            onChange={setDraft}
+            onRegenerate={() => void generate()}
+            onSave={() => void save()}
+            saving={saving}
+            saved={Boolean(savedId)}
+          />
+        </>
       ) : null}
     </div>
   );

@@ -1,8 +1,19 @@
 import { NextResponse } from "next/server";
 import { createMockWordCard } from "@/lib/mock-word-card";
-import { generateWordInputSchema, wordCardDraftSchema } from "@/lib/word-card-schema";
+import {
+  generateWordInputSchema,
+  normalizeTerm,
+  wordCardDraftSchema,
+} from "@/lib/word-card-schema";
+import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
+  const supabase = await createClient();
+  const { data: authData } = await supabase.auth.getClaims();
+  if (!authData?.claims?.sub) {
+    return NextResponse.json({ error: "Please sign in first." }, { status: 401 });
+  }
+
   let payload: unknown;
   try {
     payload = await request.json();
@@ -15,6 +26,27 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "Please check the word, context, and source.", issues: input.error.flatten() },
       { status: 400 },
+    );
+  }
+
+  const normalizedTerm = normalizeTerm(input.data.text);
+  const { data: existing, error: duplicateError } = await supabase
+    .from("words")
+    .select("id, word")
+    .eq("normalized_term", normalizedTerm)
+    .maybeSingle();
+
+  if (duplicateError) {
+    return NextResponse.json(
+      { error: "The database is not ready. Apply the Supabase migration first." },
+      { status: 503 },
+    );
+  }
+
+  if (existing) {
+    return NextResponse.json(
+      { error: `“${existing.word}” is already in My Words.`, existingId: existing.id },
+      { status: 409 },
     );
   }
 

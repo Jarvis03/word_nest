@@ -15,6 +15,8 @@ const items = [
 export function BottomNav() {
   const pathname = usePathname();
 
+  if (pathname.startsWith("/auth")) return null;
+
   return (
     <nav
       aria-label="Primary navigation"

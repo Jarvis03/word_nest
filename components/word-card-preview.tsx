@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, RotateCw, Save, Volume2, X } from "lucide-react";
+import { Check, LoaderCircle, Pencil, RotateCw, Save, Volume2, X } from "lucide-react";
 import type { WordCardDraft } from "@/lib/word-card-schema";
 
 function speak(text: string) {
@@ -18,12 +18,18 @@ export function WordCardPreview({
   onEditingChange,
   onChange,
   onRegenerate,
+  onSave,
+  saving,
+  saved,
 }: {
   draft: WordCardDraft;
   editing: boolean;
   onEditingChange: (editing: boolean) => void;
   onChange: (draft: WordCardDraft) => void;
   onRegenerate: () => void;
+  onSave: () => void;
+  saving: boolean;
+  saved: boolean;
 }) {
   const update = <K extends keyof WordCardDraft>(key: K, value: WordCardDraft[K]) => {
     onChange({ ...draft, [key]: value });
@@ -146,11 +152,12 @@ export function WordCardPreview({
         </button>
         <button
           type="button"
-          disabled
-          title="Supabase persistence is the next implementation slice"
-          className="inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-4 py-3 text-sm font-bold text-white opacity-50"
+          onClick={onSave}
+          disabled={saving || saved}
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-4 py-3 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-60"
         >
-          <Save size={16} /> Save next
+          {saving ? <LoaderCircle className="animate-spin" size={16} /> : saved ? <Check size={16} /> : <Save size={16} />}
+          {saving ? "Saving..." : saved ? "Saved" : "Save Word"}
         </button>
       </div>
     </section>
