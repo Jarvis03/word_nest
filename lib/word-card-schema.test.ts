@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { generateWordInputSchema, normalizeTerm, wordCardDraftSchema } from "./word-card-schema";
+import {
+  generateWordInputSchema,
+  normalizeTerm,
+  updateWordInputSchema,
+  wordCardDraftSchema,
+} from "./word-card-schema";
 import { createMockWordCard } from "./mock-word-card";
 
 describe("word card boundary", () => {
@@ -17,5 +22,15 @@ describe("word card boundary", () => {
   it("produces a schema-valid local preview", () => {
     const input = generateWordInputSchema.parse({ text: "rollout", source: "work" });
     expect(wordCardDraftSchema.parse(createMockWordCard(input)).partOfSpeech).toBe("noun");
+  });
+
+  it("validates the complete card again before an update", () => {
+    const draft = createMockWordCard(
+      generateWordInputSchema.parse({ text: "rollout", source: "work" }),
+    );
+    expect(updateWordInputSchema.safeParse({ draft }).success).toBe(true);
+    expect(
+      updateWordInputSchema.safeParse({ draft: { ...draft, collocations: [] } }).success,
+    ).toBe(false);
   });
 });

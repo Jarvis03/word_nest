@@ -11,6 +11,23 @@ export const sourceValues = [
 
 export const sourceSchema = z.enum(sourceValues);
 
+export const entryTypeValues = ["word", "phrase"] as const;
+export const partOfSpeechValues = [
+  "noun",
+  "verb",
+  "adjective",
+  "adverb",
+  "pronoun",
+  "preposition",
+  "conjunction",
+  "determiner",
+  "interjection",
+  "phrasal_verb",
+  "idiom",
+  "phrase",
+  "other",
+] as const;
+
 export const generateWordInputSchema = z.object({
   text: z.string().trim().min(1).max(80),
   originalContext: z.string().trim().max(500).optional(),
@@ -20,23 +37,9 @@ export const generateWordInputSchema = z.object({
 export const wordCardDraftSchema = z.object({
   word: z.string().trim().min(1).max(80),
   normalizedTerm: z.string().trim().min(1).max(80),
-  entryType: z.enum(["word", "phrase"]),
+  entryType: z.enum(entryTypeValues),
   lemma: z.string().trim().min(1).max(80),
-  partOfSpeech: z.enum([
-    "noun",
-    "verb",
-    "adjective",
-    "adverb",
-    "pronoun",
-    "preposition",
-    "conjunction",
-    "determiner",
-    "interjection",
-    "phrasal_verb",
-    "idiom",
-    "phrase",
-    "other",
-  ]),
+  partOfSpeech: z.enum(partOfSpeechValues),
   coreMeaning: z.string().trim().min(1).max(500),
   chineseHint: z.string().trim().min(1).max(120),
   mentalModel: z.array(z.string().trim().min(1).max(80)).min(1).max(5),
@@ -65,6 +68,10 @@ export const saveWordInputSchema = z.object({
 });
 
 export type SaveWordInput = z.infer<typeof saveWordInputSchema>;
+
+export const updateWordInputSchema = z.object({
+  draft: wordCardDraftSchema,
+});
 
 export function normalizeTerm(value: string) {
   return value.normalize("NFKC").trim().replace(/\s+/g, " ").toLocaleLowerCase("en-US");

@@ -43,6 +43,7 @@ npm run build
 - Mobile-first five-tab shell
 - Word/phrase input with optional context and source
 - Validated generation and persistence APIs with per-user duplicate handling
+- Prefix search, word details, full card editing, and confirmed cascading deletion
 - Deterministic local card generator with a full `rollout` example
 - Editable card preview and browser speech synthesis
 
