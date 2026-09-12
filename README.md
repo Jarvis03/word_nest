@@ -15,7 +15,7 @@ in the Supabase SQL Editor.
 Add the local callback URL to **Supabase → Authentication → URL Configuration → Redirect URLs**:
 
 ```text
-http://localhost:3000/auth/callback
+http://localhost:3001/**
 ```
 
 Start the app:
@@ -24,11 +24,7 @@ Start the app:
 npm run dev
 ```
 
-If port 3000 is already occupied, use a different port and register its callback URL too:
-
-```bash
-npm run dev -- --port 3100
-```
+Open `http://localhost:3001`. Port 3001 is the project's fixed local port because port 3000 is used by Open WebUI on the current development machine.
 
 Open the displayed local URL, register with an email address and a password of at least 8 characters containing both a letter and a number, then confirm the email if email confirmation is enabled in Supabase.
 
