@@ -48,3 +48,22 @@ npm run build
 - Editable card preview and browser speech synthesis
 
 The real LLM adapter and FSRS review scheduling are the next implementation slices.
+
+## Deployment
+
+Import the GitHub repository into Vercel and set these variables for Production and Preview:
+
+```text
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+```
+
+Set this secret for Production:
+
+```text
+CRON_SECRET
+```
+
+`CRON_SECRET` must be a random value of at least 16 characters. Vercel sends it as a bearer token when invoking `/api/cron/keep-alive`. The production cron runs at 03:17 UTC every other calendar day and records a database heartbeat in Supabase.
+
+Apply all Supabase migrations in filename order before relying on the scheduled heartbeat. Git pushes to `main` automatically deploy to production when the repository is connected through Vercel's Git integration.
