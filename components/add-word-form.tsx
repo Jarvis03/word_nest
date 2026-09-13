@@ -5,6 +5,7 @@ import { LoaderCircle, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { WordCardPreview } from "@/components/word-card-preview";
 import type { WordCardDraft } from "@/lib/word-card-schema";
+import { invalidateWordsCache } from "@/lib/words-cache";
 
 const sources = [
   ["other", "Other"],
@@ -75,6 +76,7 @@ export function AddWordForm() {
       });
       const body = (await response.json()) as { id?: string; error?: string };
       if (!response.ok || !body.id) throw new Error(body.error || "Unable to save this card.");
+      invalidateWordsCache();
       setSavedId(body.id);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Unable to save this card.");

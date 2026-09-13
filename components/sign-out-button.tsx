@@ -3,6 +3,7 @@
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { invalidateWordsCache } from "@/lib/words-cache";
 
 export function SignOutButton() {
   const router = useRouter();
@@ -12,6 +13,7 @@ export function SignOutButton() {
       type="button"
       onClick={async () => {
         await createClient().auth.signOut();
+        invalidateWordsCache();
         router.push("/auth");
         router.refresh();
       }}

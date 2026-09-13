@@ -4,6 +4,7 @@ import { FormEvent, useState } from "react";
 import { LoaderCircle, LogIn, UserPlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { invalidateWordsCache } from "@/lib/words-cache";
 
 export function AuthForm({ redirectTo }: { redirectTo: string }) {
   const router = useRouter();
@@ -43,6 +44,7 @@ export function AuthForm({ redirectTo }: { redirectTo: string }) {
       if (signUpError) {
         setError(signUpError.message);
       } else if (data.session) {
+        invalidateWordsCache();
         router.push(redirectTo);
         router.refresh();
       } else {
@@ -53,6 +55,7 @@ export function AuthForm({ redirectTo }: { redirectTo: string }) {
       if (signInError) {
         setError("Unable to sign in. Check your email, password, and email confirmation.");
       } else {
+        invalidateWordsCache();
         router.push(redirectTo);
         router.refresh();
       }

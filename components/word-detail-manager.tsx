@@ -9,6 +9,7 @@ import {
   partOfSpeechValues,
   type WordCardDraft,
 } from "@/lib/word-card-schema";
+import { invalidateWordsCache } from "@/lib/words-cache";
 
 type Relationship = WordCardDraft["relatedWords"][number]["relationship"];
 
@@ -80,6 +81,7 @@ export function WordDetailManager({
       if (!response.ok || !body.draft) throw new Error(body.error || "Unable to update this card.");
       setDraft(body.draft);
       setSavedDraft(body.draft);
+      invalidateWordsCache();
       setEditing(false);
       setMessage("Changes saved.");
       router.refresh();
@@ -99,6 +101,7 @@ export function WordDetailManager({
         const body = (await response.json()) as { error?: string };
         throw new Error(body.error || "Unable to delete this word.");
       }
+      invalidateWordsCache();
       router.push("/words");
       router.refresh();
     } catch (caught) {
