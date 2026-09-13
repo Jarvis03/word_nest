@@ -2,15 +2,7 @@
 
 import { Check, LoaderCircle, Pencil, RotateCw, Save, Volume2, X } from "lucide-react";
 import type { WordCardDraft } from "@/lib/word-card-schema";
-
-function speak(text: string) {
-  if (!("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
-  utterance.rate = 1;
-  window.speechSynthesis.speak(utterance);
-}
+import { speakEnglish } from "@/lib/speech";
 
 export function WordCardPreview({
   draft,
@@ -43,7 +35,7 @@ export function WordCardPreview({
             <h2 className="text-4xl font-semibold tracking-[-0.04em]">{draft.word}</h2>
             <button
               type="button"
-              onClick={() => speak(draft.word)}
+              onClick={() => speakEnglish(draft.word)}
               aria-label={`Play ${draft.word}`}
               className="grid size-10 place-items-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)]"
             >
@@ -182,7 +174,7 @@ function Example({ label, sentence }: { label: string; sentence: string }) {
         <p className="leading-7">{sentence}</p>
         <button
           type="button"
-          onClick={() => speak(sentence)}
+          onClick={() => speakEnglish(sentence)}
           aria-label={`Play ${label.toLowerCase()}`}
           className="grid size-9 shrink-0 place-items-center rounded-full bg-white text-[var(--accent)]"
         >

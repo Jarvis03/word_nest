@@ -9,17 +9,10 @@ import {
   partOfSpeechValues,
   type WordCardDraft,
 } from "@/lib/word-card-schema";
+import { speakEnglish } from "@/lib/speech";
 import { invalidateWordsCache } from "@/lib/words-cache";
 
 type Relationship = WordCardDraft["relatedWords"][number]["relationship"];
-
-function speak(text: string) {
-  if (!("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-US";
-  window.speechSynthesis.speak(utterance);
-}
 
 function lines(value: string) {
   return value
@@ -124,7 +117,7 @@ export function WordDetailManager({
               <h1 className="text-4xl font-semibold tracking-[-0.04em]">{draft.word}</h1>
               <button
                 type="button"
-                onClick={() => speak(draft.word)}
+                onClick={() => speakEnglish(draft.word)}
                 aria-label={`Play ${draft.word}`}
                 className="grid size-10 place-items-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)]"
               >
@@ -234,5 +227,5 @@ function Section({ label, children }: { label: string; children: React.ReactNode
 }
 
 function Example({ label, sentence }: { label: string; sentence: string }) {
-  return <Section label={label}><div className="flex items-start justify-between gap-4 rounded-2xl bg-[#f3f1ea] p-4"><p className="leading-7">{sentence}</p><button type="button" onClick={() => speak(sentence)} aria-label={`Play ${label.toLowerCase()}`} className="grid size-9 shrink-0 place-items-center rounded-full bg-white text-[var(--accent)]"><Volume2 size={16} /></button></div></Section>;
+  return <Section label={label}><div className="flex items-start justify-between gap-4 rounded-2xl bg-[#f3f1ea] p-4"><p className="leading-7">{sentence}</p><button type="button" onClick={() => speakEnglish(sentence)} aria-label={`Play ${label.toLowerCase()}`} className="grid size-9 shrink-0 place-items-center rounded-full bg-white text-[var(--accent)]"><Volume2 size={16} /></button></div></Section>;
 }

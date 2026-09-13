@@ -1,15 +1,16 @@
-import { AddWordForm } from "@/components/add-word-form";
+import { AddHub } from "@/components/add-hub";
 import { PageHeader } from "@/components/page-header";
 
-export default function AddPage() {
+export default async function AddPage({ searchParams }: { searchParams: Promise<{ mode?: string }> }) {
+  const mode = (await searchParams).mode === "article" ? "article" : "word";
   return (
     <>
       <PageHeader
         eyebrow="Make it yours"
-        title="Add to My Words"
-        description="Give the word a little context. We’ll turn it into one focused, memorable card."
+        title="Add to your English"
+        description="Save one word or turn a whole article into a personal study pack."
       />
-      <AddWordForm />
+      <AddHub initialMode={mode} />
     </>
   );
 }
